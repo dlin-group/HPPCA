@@ -32,12 +32,6 @@ result = fit_hppca(
 )
 ```
 
-The main public functions are:
-
-- `fit_hppca`
-- `fit_hppca_alg1`
-- `fit_hppca_alg2_cs`
-
 ## Key Arguments
 
 ### `kernel_method`
