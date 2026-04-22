@@ -4,7 +4,7 @@ Hierarchical Probabilistic Principal Component Analysis (HPPCA) for longitudinal
 
 This directory is the package-oriented version of the research code in `../hppca`.
 
-Simulation code is in `simulations/`. See `examples/` for small runnable examples and `scripts/` for command-line workflows.
+See `examples/` for small runnable examples and `scripts/` for command-line workflows. Simulation code is in `simulations/`.
 
 ## Install
 
