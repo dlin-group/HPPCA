@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the associated HPPCA manuscript."
+title: "Hierarchical Probabilistic Principal Component Analysis of Longitudinal Data"
+version: "0.0.1"
+date-released: "2026-04-22"
+authors:
+  - family-names: Zhang
+    given-names: Xinyu
+  - family-names: Qaqish
+    given-names: Ameer
+  - family-names: Lin
+    given-names: D. Y.
+  - family-names: Li
+    given-names: Didong

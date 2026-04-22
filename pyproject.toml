@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel", "pybind11>=2.10"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hppca"
+version = "0.0.1"
+description = "Hierarchical Probabilistic Principal Component Analysis for longitudinal data"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {file = "LICENSE"}
+authors = [
+  {name = "Xinyu Zhang"},
+  {name = "Ameer Qaqish"},
+  {name = "D. Y. Lin"},
+  {name = "Didong Li"},
+]
+dependencies = [
+  "numpy",
+  "scipy",
+  "pandas",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+hppca = ["bind/*.cc", "bind/*.hh"]
