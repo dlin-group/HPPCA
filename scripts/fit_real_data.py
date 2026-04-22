@@ -251,7 +251,7 @@ start_time = time.time()
     iteration_num, converged,
     W1_init_used, W2_init_used, sigma2_init_used, ell_param_init_used,
     Y_list, participant_survey_indices, participant_original_indices, survey_times_out,
-    latent_X_df,
+    latent_Z_df,
 ) = fit_hppca(
     Y_obs=df_input,
     d1=d1,
@@ -326,8 +326,8 @@ else:
     np.save(yfilled_path, np.asarray(Y_filled_final_out))
 print(f"Saved filled output to: {yfilled_path}")
 
-latent_path = os.path.join(savepath, f"{filename_base}_latent_X_df.csv")
-latent_X_df.to_csv(latent_path, index=False)
+latent_path = os.path.join(savepath, f"{filename_base}_latent_Z_df.csv")
+latent_Z_df.to_csv(latent_path, index=False)
 print(f"Saved latent factors to: {latent_path}")
 
 estimates_npz_path = os.path.join(savepath, f"{filename_base}_estimates.npz")

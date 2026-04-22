@@ -2001,30 +2001,118 @@ def fit_hppca(
     subject_id_col: str | int = "subject_id",
     visit_time_col: str | int | None = "visit_time",
     feature_cols: list[str] | list[int] | None = None,
-    return_filled_dataframe: bool | None = None,
-    return_latent_dataframe: bool = False,
+    return_filled_dataframe: bool | None = True,
+    return_latent_dataframe: bool = True,
 ):
     """
-    Convenience wrapper:
-      - accepts either the original 3D tensor input or tabular visit records,
-      - builds participant lists directly (tabular path avoids dense tensor materialization),
-      - initializes params if not provided,
-      - runs EM_algorithm_gp,
-      - returns the same outputs as EM_algorithm_gp plus the prep artifacts.
+    Convenience wrapper for fitting HPPCA.
+
+    The input can be either the original 3D tensor representation or tabular
+    visit records. The tabular path builds ragged participant lists directly and
+    avoids dense tensor materialization.
+
+    Defaults for returned DataFrames
+    --------------------------------
+    return_filled_dataframe : True by default
+        Filled data is returned as a DataFrame by default. Set this to False
+        for 3D tensor input if you want the filled data as an array with shape
+        (n_orig, J, p). Set this to None for input-dependent behavior: tensor
+        input returns a tensor, and tabular input returns a DataFrame.
+    return_latent_dataframe : True by default
+        The latent-factor DataFrame is appended to the return tuple by default.
+        Set this to False to return only the first 17 entries.
+
+    Shape symbols
+    -------------
+    n_orig : int
+        Number of original participants or unique subjects.
+    n_eff : int
+        Number of participants with at least one observed visit used by EM.
+    J : int
+        Number of survey times in the global survey grid.
+    J_i : int
+        Number of observed visits for effective participant i.
+    p : int
+        Number of observed features/items.
+    d1 : int
+        Number of participant-level latent dimensions.
+    d2 : int
+        Number of visit-level temporal latent dimensions.
+    n_rows : int
+        Number of rows in the input table when Y_obs is tabular.
 
     Returns
     -------
-    (W1f, W2f, s2f, ell_pf, EZ1i_list, EZ2ij_list, Y_filled, iteration_num, converged,
-     Y_list, participant_survey_indices, participant_original_indices, survey_times)
-    If `return_latent_dataframe=True`, one additional output is appended:
-      latent_X_df (long latent table with z1/z2 columns).
+    tuple
+        The first 17 entries are:
+
+        0. W1f : np.ndarray, shape (p, d1)
+            Final loading matrix for participant-level latent factors Z1.
+        1. W2f : np.ndarray, shape (p, d2)
+            Final loading matrix for visit-level latent factors Z2.
+        2. s2f : float
+            Final observation noise variance sigma2.
+        3. ell_pf : float | np.ndarray | None
+            Final GP length-scale parameter. This is None for "gp_iid", a
+            scalar for "*_single_ell", and an array with shape (d2,) for
+            "*_multi_ell".
+        4. EZ1i_list : list[np.ndarray]
+            Length n_eff. Entry i is E[Z1_i | data], shape (d1,).
+        5. EZ2ij_list : list[np.ndarray]
+            Length n_eff. Entry i is E[Z2_i | data], shape (d2, J_i). Columns
+            correspond to participant_survey_indices[i].
+        6. Y_filled_out : np.ndarray | pd.DataFrame
+            Filled data after EM. For 3D tensor input with
+            return_filled_dataframe=True (the default), this is a long
+            DataFrame with shape
+            (n_orig * J, p + 2) and columns subject_id, visit_time, and
+            feature_0..feature_{p-1}. For 3D tensor input with
+            return_filled_dataframe=False, this is an array with shape
+            (n_orig, J, p). For tabular input, this is a DataFrame with shape
+            (n_rows, p + 2), one row per original input record, and columns
+            subject_id, visit_time, and the feature columns.
+        7. iteration_num : int
+            Number of EM iterations actually run.
+        8. converged : bool
+            Whether EM stopped because the maximum relative parameter change
+            was below tol.
+        9. W1_init : np.ndarray, shape (p, d1)
+            Initial W1 used by EM.
+        10. W2_init : np.ndarray, shape (p, d2)
+            Initial W2 used by EM.
+        11. sigma2_init : float
+            Initial observation noise variance used by EM.
+        12. ell_param_init : float | np.ndarray | None
+            Initial length-scale parameter used by EM.
+        13. Y_list : list[np.ndarray]
+            Length n_eff. Entry i is the internal observed-data matrix with
+            shape (p, J_i). Columns are the participant's observed visits.
+        14. participant_survey_indices : list[np.ndarray]
+            Length n_eff. Entry i has shape (J_i,) and maps columns of
+            Y_list[i] and EZ2ij_list[i] to indices in survey_times.
+        15. participant_original_indices : list[int]
+            Length n_eff. Entry i maps effective participant i back to the
+            original participant/subject index.
+        16. survey_times : np.ndarray, shape (J,)
+            Global survey-time grid used by the GP prior.
+
+        With return_latent_dataframe=True (the default), one additional entry
+        is appended:
+
+        17. latent_Z_df : pd.DataFrame
+            Long latent-factor table with shape (sum_i J_i, d1 + d2 + 2). One
+            row corresponds to one observed visit used by EM. Columns are
+            subject_id, visit_time, z1_dim_1..z1_dim_d1, and
+            z2_dim_1..z2_dim_d2. Z1 values repeat across visits for the same
+            participant.
 
     Notes
     -----
-    - If `return_filled_dataframe` is None (default), `Y_filled` is:
+    - If `return_filled_dataframe` is None, `Y_filled_out` is:
         * a DataFrame for tabular input (2D numpy / DataFrame),
         * a tensor for 3D tensor input.
-    - Set `return_filled_dataframe` explicitly to override this behavior.
+    - Set `return_filled_dataframe` explicitly to override this behavior for
+      3D tensor input. Tabular input always returns filled data as a DataFrame.
     """
     if seed is not None:
         np.random.seed(seed)
@@ -2140,7 +2228,7 @@ def fit_hppca(
     if records_meta is not None:
         latent_subject_ids = np.asarray(records_meta["subject_ids"])
     latent_subject_col = subject_id_col if isinstance(subject_id_col, str) else "subject_id"
-    latent_X_df = build_latent_long_dataframe(
+    latent_Z_df = build_latent_long_dataframe(
         EZ1i_list=EZ1i_list,
         EZ2ij_list=EZ2ij_list,
         participant_survey_indices=participant_survey_indices,
@@ -2150,7 +2238,7 @@ def fit_hppca(
         subject_col_name=latent_subject_col,
         visit_col_name="visit_time",
     )
-    return (*base_out, latent_X_df)
+    return (*base_out, latent_Z_df)
 
 def impute_full_Y_after_em(
     Y_obs: np.ndarray,
