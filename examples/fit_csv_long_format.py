@@ -38,12 +38,19 @@ def main():
     )
 
     W1, W2, sigma2, ell = fit[:4]
-    latent_df = fit[-1]
+    Y_filled_out = fit[6]
+    latent_Z_df = fit[-1]
+
     print("W1 shape:", W1.shape)
     print("W2 shape:", W2.shape)
     print("sigma2:", sigma2)
     print("ell:", ell)
-    print(latent_df.head())
+
+    print("\nExample filled dataframe:")
+    print(Y_filled_out.head())
+
+    print("\nExample latent Z dataframe:")
+    print(latent_Z_df.head())
 
 
 if __name__ == "__main__":
