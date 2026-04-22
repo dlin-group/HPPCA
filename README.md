@@ -56,8 +56,8 @@ Suggested starting point: use `"gp_rbf_single_ell"` for smooth longitudinal data
 
 `init_method` controls how EM is initialized.
 
-- `"algo2_cs"`: Compound-symmetry initializer. This is usually a robust and fast default.
-- `"algo1"`: Known/shared covariance initializer using an estimated temporal covariance projected to the paper's Assumption 1. This can be useful when the temporal covariance estimate is reliable.
+- `"algo2_cs"`: Compound-symmetry initializer using Algorithm 2 in the paper. This is usually a robust and fast default.
+- `"algo1"`: Known/shared covariance initializer using an estimated temporal covariance projected to the paper's Assumption 1 (Algorithm 1 in the paper). This can be useful when the temporal covariance estimate is reliable.
 - `"random"`: Random loading initialization. This is mainly useful for debugging or sensitivity checks; it usually needs more EM iterations.
 
 Suggested starting point: use `"algo2_cs"` unless you specifically want to compare initializers.
