@@ -4,6 +4,8 @@ Hierarchical Probabilistic Principal Component Analysis (HPPCA) for longitudinal
 
 This directory is the package-oriented version of the research code in `../hppca`.
 
+Simulation code is in `simulations/`. See `examples/` for small runnable examples and `scripts/` for command-line workflows.
+
 ## Install
 
 From this directory:
@@ -185,5 +187,3 @@ Suggested value: use the number of CPU cores you want to allocate, for example `
 `seed` sets the NumPy random seed used for initialization and reproducibility.
 
 Suggested value: set an integer such as `seed=42` for reproducible analyses.
-
-See `examples/` for small runnable examples and `scripts/` for command-line workflows.
