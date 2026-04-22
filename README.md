@@ -86,6 +86,6 @@ Suggested value: use the number of CPU cores you want to allocate, for example `
 
 `seed` sets the NumPy random seed used for initialization and reproducibility.
 
-Suggested value: set an integer such as `seed=42` for reproducible analyses. If `seed=None`, results may vary between runs, especially when using random initialization or randomized helper routines in the initializers.
+Suggested value: set an integer such as `seed=42` for reproducible analyses.
 
 See `examples/` for small runnable examples and `scripts/` for command-line workflows.
