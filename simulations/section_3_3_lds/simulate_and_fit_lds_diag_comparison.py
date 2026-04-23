@@ -319,7 +319,7 @@ def main():
     parser.add_argument(
         "--savepath",
         type=str,
-        default=os.path.join("sim_results", "sim_0318_LDSdiag_cmp"),
+        default=os.path.join("sim_results", "sim_LDSdiag_cmp"),
     )
 
     args = parser.parse_args()

@@ -338,7 +338,7 @@ def main():
     parser.add_argument(
         "--savepath",
         type=str,
-        default=os.path.join("sim_results", "sim_0318_results_LDSdiag_cmp_ar2"),
+        default=os.path.join("sim_results", "sim_results_LDSdiag_cmp_ar2"),
     )
 
     args = parser.parse_args()

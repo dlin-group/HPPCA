@@ -9,14 +9,14 @@ import numpy as np
 parser = argparse.ArgumentParser(description="Plot Web Appendix C.2 AR(2) LDS MSE comparison.")
 parser.add_argument(
     "--input_csv",
-    default=os.path.join("sim_results", "sim_0318_results_LDSdiag_cmp_ar2", "summary", "ALL_runs_combined.csv"),
+    default=os.path.join("sim_results", "sim_results_LDSdiag_cmp_ar2", "summary", "ALL_runs_combined.csv"),
     help="Combined CSV produced by summarize_results_lds_ar2.py.",
 )
 parser.add_argument(
     "--output_png",
     default=os.path.join(
         "sim_results",
-        "sim_0318_results_LDSdiag_cmp_ar2",
+        "sim_results_LDSdiag_cmp_ar2",
         "summary",
         "MSE_Comparison_Standard_lds_ar2_phi1_0.8_phi2_0.1.png",
     ),

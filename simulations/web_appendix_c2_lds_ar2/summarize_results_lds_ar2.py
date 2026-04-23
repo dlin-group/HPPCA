@@ -6,7 +6,7 @@ import argparse
 parser = argparse.ArgumentParser(description="Summarize Web Appendix C.2 AR(2) LDS simulation result CSVs.")
 parser.add_argument(
     "--results_folder",
-    default=os.path.join("sim_results", "sim_0318_results_LDSdiag_cmp_ar2"),
+    default=os.path.join("sim_results", "sim_results_LDSdiag_cmp_ar2"),
     help="Folder containing per-run results_*.csv files.",
 )
 parser.add_argument(
